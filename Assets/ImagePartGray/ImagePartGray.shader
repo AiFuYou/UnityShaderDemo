@@ -13,7 +13,7 @@ Shader "Demo/ImagePartGray"
         ZWrite Off
         ZTest [unity_GUIZTestMode]
         
-        GrabPass {"_ScreenTex"}
+        GrabPass {}
         
         Pass
         {
@@ -31,7 +31,7 @@ Shader "Demo/ImagePartGray"
 
             struct v2f
             {
-                float2 uv : TEXCOORD0;
+                float2 grabPos : TEXCOORD0;
                 float4 vertex : SV_POSITION;
             };
             
@@ -39,15 +39,15 @@ Shader "Demo/ImagePartGray"
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = ComputeGrabScreenPos(o.vertex);
+                o.grabPos = ComputeGrabScreenPos(o.vertex);
                 return o;
             }
 
-            sampler2D _ScreenTex;
+            sampler2D _GrabTexture;
 
             fixed4 frag (v2f i) : SV_Target
             {
-                fixed4 col = tex2D(_ScreenTex, i.uv);
+                fixed4 col = tex2D(_GrabTexture, i.grabPos);
                 fixed grayScale = Luminance(col.rgb);
                 return fixed4(grayScale, grayScale, grayScale, col.a);
             }

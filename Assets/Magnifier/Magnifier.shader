@@ -1,4 +1,4 @@
-Shader "Demo/Magnifier"
+Shader "Hidden/Magnifier"
 {
     Properties
     {

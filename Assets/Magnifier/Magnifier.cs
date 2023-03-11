@@ -16,7 +16,7 @@ public class Magnifier : MonoBehaviour
     {
         if (!_material)
         {
-            _material = new Material(Shader.Find("Demo/Magnifier"));
+            _material = new Material(Shader.Find("Hidden/Magnifier"));
         }
 
         if (_material != null && _material.shader.isSupported)

@@ -39,23 +39,38 @@ Shader "Demo/Magnifier"
             sampler2D _MainTex;
             float2 _Pos;
             float _ZoomFactor;
-            float _AtZoomArea;
+            float _Size;
+            float _EdgeFactor;
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float2 scale = float2(_ScreenParams.x / _ScreenParams.y, 1);
-                
                 float2 center = _Pos;
                 float2 dir = center - i.uv;
 
-                dir.x *= _ScreenParams.x / _ScreenParams.y;
-                
-                float len = length(dir);
+                float2 scale = float2(_ScreenParams.x / _ScreenParams.y, 1);
+                float len = length(dir * scale);
 
                 // step(x, y)，如果x<=y,则返回1，否则返回0
-                _AtZoomArea = step(len, _AtZoomArea);
+                // float atZoomArea = 1 - step(_Size, len);
+
+                // 平滑阶梯函数
+                // float smootherstep(float edge0, float edge1, float x) {
+                //   // Scale, and clamp x to 0..1 range
+                //   x = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+                //   // Evaluate polynomial
+                //   return x * x * x * (x * (x * 6 - 15) + 10);
+                // }
+                //
+                // float clamp(float x, float lowerlimit, float upperlimit) {
+                //   if (x < lowerlimit)
+                //     x = lowerlimit;
+                //   if (x > upperlimit)
+                //     x = upperlimit;
+                //   return x;
+                // }
+                float atZoomArea = 1 - smoothstep(_Size, _Size + _EdgeFactor, len);
                 
-                fixed4 col = tex2D(_MainTex, i.uv + dir * _ZoomFactor * _AtZoomArea);
+                fixed4 col = tex2D(_MainTex, i.uv + dir * _ZoomFactor * atZoomArea);
                 return col;
             }
             ENDCG

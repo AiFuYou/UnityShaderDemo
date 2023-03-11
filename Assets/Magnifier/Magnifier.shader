@@ -1,4 +1,4 @@
-Shader "Hidden/Magnifier"
+Shader "Demo/Magnifier"
 {
     Properties
     {
@@ -6,7 +6,6 @@ Shader "Hidden/Magnifier"
     }
     SubShader
     {
-        // No culling or depth
         Cull Off ZWrite Off ZTest Always
 
         Pass
@@ -38,12 +37,25 @@ Shader "Hidden/Magnifier"
             }
 
             sampler2D _MainTex;
+            float2 _Pos;
+            float _ZoomFactor;
+            float _AtZoomArea;
 
             fixed4 frag (v2f i) : SV_Target
             {
-                fixed4 col = tex2D(_MainTex, i.uv);
-                // just invert the colors
-                col.rgb = 1 - col.rgb;
+                float2 scale = float2(_ScreenParams.x / _ScreenParams.y, 1);
+                
+                float2 center = _Pos;
+                float2 dir = center - i.uv;
+
+                dir.x *= _ScreenParams.x / _ScreenParams.y;
+                
+                float len = length(dir);
+
+                // step(x, y)，如果x<=y,则返回1，否则返回0
+                _AtZoomArea = step(len, _AtZoomArea);
+                
+                fixed4 col = tex2D(_MainTex, i.uv + dir * _ZoomFactor * _AtZoomArea);
                 return col;
             }
             ENDCG

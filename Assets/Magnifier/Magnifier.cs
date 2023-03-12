@@ -6,7 +6,7 @@ public class Magnifier : MonoBehaviour
     [Range(0, 0.2f)] public float size = 0.5f;
     [Range(0, 0.2f)] public float edgeFactor = 0.1f;
     private Vector2 _pos = new(0.5f, 0.5f);
-    private Material _material;
+    private Material _mat;
     private static readonly int Pos = Shader.PropertyToID("_Pos");
     private static readonly int ZoomFactor = Shader.PropertyToID("_ZoomFactor");
     private static readonly int Size = Shader.PropertyToID("_Size");
@@ -14,15 +14,15 @@ public class Magnifier : MonoBehaviour
 
     private void OnRenderImage(RenderTexture src, RenderTexture dest)
     {
-        if (!_material) _material = new Material(Shader.Find("Hidden/Magnifier"));
+        if (!_mat) _mat = new Material(Shader.Find("Hidden/Magnifier"));
 
-        if (_material != null && _material.shader.isSupported)
+        if (_mat != null && _mat.shader.isSupported)
         {
-            _material.SetVector(Pos, _pos);
-            _material.SetFloat(ZoomFactor, zoomFactor);
-            _material.SetFloat(Size, size);
-            _material.SetFloat(EdgeFactor, edgeFactor);
-            Graphics.Blit(src, dest, _material);
+            _mat.SetVector(Pos, _pos);
+            _mat.SetFloat(ZoomFactor, zoomFactor);
+            _mat.SetFloat(Size, size);
+            _mat.SetFloat(EdgeFactor, edgeFactor);
+            Graphics.Blit(src, dest, _mat);
         }
         else
         {

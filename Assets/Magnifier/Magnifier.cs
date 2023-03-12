@@ -14,10 +14,7 @@ public class Magnifier : MonoBehaviour
 
     private void OnRenderImage(RenderTexture src, RenderTexture dest)
     {
-        if (!_material)
-        {
-            _material = new Material(Shader.Find("Hidden/Magnifier"));
-        }
+        if (!_material) _material = new Material(Shader.Find("Hidden/Magnifier"));
 
         if (_material != null && _material.shader.isSupported)
         {
@@ -34,11 +31,9 @@ public class Magnifier : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (Input.GetMouseButton(0))
-        {
             _pos = new Vector2(Input.mousePosition.x / Screen.width, Input.mousePosition.y / Screen.height);
-        }
     }
 }

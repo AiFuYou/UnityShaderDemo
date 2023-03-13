@@ -1,37 +1,73 @@
-using UnityEditor;
-using UnityEditor.UI;
+using System;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class FrostedGlassImage : Image
 {
-    [Range(1, 10)] public int blurSize = 1;
-    [Range(1, 13)] public int kernelSize = 3;
-}
+    [SerializeField] [Range(1, 10)] private int _blurSize = 1;
+    [SerializeField] [Range(3, 13)] private int _kernelSize = 3;
 
-[CustomEditor(typeof(FrostedGlassImage), true)]
-[CanEditMultipleObjects]
-public class FrostedGlassImageEditor : ImageEditor
-{
-    private SerializedProperty _blurSize;
-    private SerializedProperty _kernelSize;
-
-    protected override void OnEnable()
+    public int kernelSize
     {
-        base.OnEnable();
-        _blurSize = serializedObject.FindProperty("blurSize");
-        _kernelSize = serializedObject.FindProperty("kernelSize");
+        get => _kernelSize;
+        set
+        {
+            _kernelSize = value;
+            CalculateGaussian();
+            SetMaterialDirty();
+        }
     }
 
-    public override void OnInspectorGUI()
+    public int blurSize
     {
-        base.OnInspectorGUI();
-        BlurGUI();
+        get => _blurSize;
+        set
+        {
+            _blurSize = value;
+            SetMaterialDirty();
+        }
     }
 
-    private void BlurGUI()
+    protected override void Awake()
     {
-        EditorGUILayout.PropertyField(_blurSize);
-        EditorGUILayout.PropertyField(_kernelSize);
+        base.Awake();
+        CalculateGaussian();
+    }
+
+    private void CalculateGaussian()
+    {
+        var kernel = new float[kernelSize * kernelSize];
+        var edge = kernelSize / 2;
+        var count = 0;
+        for (var i = -edge; i <= edge; i++)
+        for (var j = -edge; j <= edge; j++)
+        {
+            kernel[count] = GetGaussian(i, j);
+            count++;
+        }
+
+        var sb = new StringBuilder();
+        var idx = 0;
+        for (var i = -edge; i <= edge; i++)
+        {
+            for (var j = -edge; j <= edge; j++)
+            {
+                sb.Append(kernel[idx]);
+                sb.Append(", ");
+                idx++;
+            }
+
+            sb.Append("\n");
+        }
+
+        Debug.Log(sb);
+    }
+
+    private float GetGaussian(int x, int y, float sigma = 1f)
+    {
+        var left = 1 / (2 * Math.PI * sigma * sigma);
+        var right = Math.Exp(-(x * x + y * y) / (2 * sigma * sigma));
+        return (float)(left * right);
     }
 }

@@ -3,7 +3,7 @@ Shader "Demo/GaussianBlur"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _BlurSize ("_BlurSize", float) = 1.0
+        _BlurSize ("BlurSize", float) = 1.0
     }
     SubShader
     {
@@ -29,8 +29,8 @@ Shader "Demo/GaussianBlur"
         
         fixed4 frag (v2f i) : SV_Target
         {
-            fixed weight[3] = {0.4026, 0.2442, 0.0545};
-            
+            fixed weight[3] = {0.4026, 0.2442, 0.0545};//5x5
+
             fixed3 col = tex2D(_MainTex, i.uv[0]).rgb * weight[0];
             for (int idx = 1; idx < 3; idx++)
             {

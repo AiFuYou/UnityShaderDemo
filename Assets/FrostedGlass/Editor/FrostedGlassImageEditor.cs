@@ -1,19 +1,18 @@
 using UnityEditor;
 using UnityEditor.UI;
-using UnityEngine;
 
 [CustomEditor(typeof(FrostedGlassImage), true)]
 [CanEditMultipleObjects]
 public class FrostedGlassImageEditor : ImageEditor
 {
-    private SerializedProperty _blurSize;
-    private SerializedProperty _kernelSize;
+    private SerializedProperty _downSample;
+    private SerializedProperty _iterations;
 
     protected override void OnEnable()
     {
         base.OnEnable();
-        _blurSize = serializedObject.FindProperty("_blurSize");
-        _kernelSize = serializedObject.FindProperty("_kernelSize");
+        _downSample = serializedObject.FindProperty("_downSample");
+        _iterations = serializedObject.FindProperty("_iterations");
     }
 
     public override void OnInspectorGUI()
@@ -26,10 +25,7 @@ public class FrostedGlassImageEditor : ImageEditor
 
     private void BlurGUI()
     {
-        EditorGUILayout.PropertyField(_blurSize);
-
-        // 卷积核为奇数
-        if (_kernelSize.intValue % 2 == 0) ++_kernelSize.intValue;
-        EditorGUILayout.PropertyField(_kernelSize);
+        EditorGUILayout.PropertyField(_downSample);
+        EditorGUILayout.PropertyField(_iterations);
     }
 }

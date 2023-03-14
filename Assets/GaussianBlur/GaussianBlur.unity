@@ -575,5 +575,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blurSize: 1
-  iterations: 2
-  downSample: 10
+  iterations: 1
+  downSample: 4

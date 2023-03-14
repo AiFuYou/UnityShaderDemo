@@ -1,73 +1,74 @@
-using System;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class FrostedGlassImage : Image
 {
-    [SerializeField] [Range(1, 10)] private int _blurSize = 1;
-    [SerializeField] [Range(3, 13)] private int _kernelSize = 3;
+    [SerializeField] [Range(1, 10)] private int _iterations = 3;
+    [SerializeField] [Range(1, 10)] private int _downSample = 2;
 
-    public int kernelSize
+    private static readonly int BlurTex = Shader.PropertyToID("_BlurTex");
+    private static readonly int MainTex = Shader.PropertyToID("_MainTex");
+
+    public int downSample
     {
-        get => _kernelSize;
+        get => _downSample;
         set
         {
-            _kernelSize = value;
-            CalculateGaussian();
-            SetMaterialDirty();
+            _downSample = value;
+            GaussianBlur();
         }
     }
 
-    public int blurSize
+    public int iterations
     {
-        get => _blurSize;
+        get => _iterations;
         set
         {
-            _blurSize = value;
-            SetMaterialDirty();
+            _iterations = value;
+            GaussianBlur();
         }
     }
 
-    protected override void Awake()
+    protected override void OnEnable()
     {
-        base.Awake();
-        CalculateGaussian();
+        base.OnEnable();
+        material = new Material(Shader.Find("Demo/FrostedGlass"));
+        material.hideFlags = HideFlags.HideAndDontSave;
+        GaussianBlur();
     }
 
-    private void CalculateGaussian()
+    /// <summary>
+    /// 降低图片采样，进行模糊处理
+    /// </summary>
+    private void GaussianBlur()
     {
-        var kernel = new float[kernelSize * kernelSize];
-        var edge = kernelSize / 2;
-        var count = 0;
-        for (var i = -edge; i <= edge; i++)
-        for (var j = -edge; j <= edge; j++)
+        var oriT = sprite.texture;
+        var w = oriT.width / downSample;
+        var h = oriT.height / downSample;
+
+        var mat = new Material(Shader.Find("Demo/GaussianBlur"));
+        var buffer0 = RenderTexture.GetTemporary(w, h);
+        Graphics.Blit(oriT, buffer0);
+        for (var i = 0; i < iterations; i++)
         {
-            kernel[count] = GetGaussian(i, j);
-            count++;
+            var buffer1 = RenderTexture.GetTemporary(w, h);
+            buffer1.filterMode = FilterMode.Bilinear;
+            Graphics.Blit(buffer0, buffer1, mat, 0);
+        
+            // 释放buffer0并将buffer1赋值给buffer0
+            RenderTexture.ReleaseTemporary(buffer0);
+            buffer0 = buffer1;
+        
+            buffer1 = RenderTexture.GetTemporary(w, h);
+            buffer1.filterMode = FilterMode.Bilinear;
+            Graphics.Blit(buffer0, buffer1, mat, 1);
+        
+            // 释放buffer0并将buffer1赋值给buffer0
+            RenderTexture.ReleaseTemporary(buffer0);
+            buffer0 = buffer1;
         }
 
-        var sb = new StringBuilder();
-        var idx = 0;
-        for (var i = -edge; i <= edge; i++)
-        {
-            for (var j = -edge; j <= edge; j++)
-            {
-                sb.Append(kernel[idx]);
-                sb.Append(", ");
-                idx++;
-            }
-
-            sb.Append("\n");
-        }
-
-        Debug.Log(sb);
-    }
-
-    private float GetGaussian(int x, int y, float sigma = 1f)
-    {
-        var left = 1 / (2 * Math.PI * sigma * sigma);
-        var right = Math.Exp(-(x * x + y * y) / (2 * sigma * sigma));
-        return (float)(left * right);
+        material.SetTexture(BlurTex, buffer0);
+        SetMaterialDirty();
     }
 }

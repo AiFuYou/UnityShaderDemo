@@ -56,26 +56,25 @@ Shader "Demo/FrostedGlassGrabPassDualKawase"
 			v2f_DownSample o;
 			o.vertex = UnityObjectToClipPos(v.vertex);
 			float2 uv = ComputeGrabScreenPos(o.vertex);
-			// _GrabTexture_TexelSize *= 0.5;
+			_GrabTexture_TexelSize *= 0.5;
 			float offset = 1 + _Offset;
 			o.uv = uv;
-			o.uv01.xy = uv + _GrabTexture_TexelSize * offset;//top right
-			o.uv01.zw = uv - _GrabTexture_TexelSize * offset;//bottom left
-			o.uv23.xy = uv - float2(_GrabTexture_TexelSize.x, -_GrabTexture_TexelSize.y) * offset;//top left
-			o.uv23.zw = uv + float2(_GrabTexture_TexelSize.x, -_GrabTexture_TexelSize.y) * offset;//bottom right
-			
+			o.uv01.xy = uv + _GrabTexture_TexelSize * float2(1, 1) * offset;//top right
+			o.uv01.zw = uv + _GrabTexture_TexelSize * float2(-1, -1) * offset;//bottom left
+			o.uv23.xy = uv + _GrabTexture_TexelSize * float2(-1, 1) * offset;//top left
+			o.uv23.zw = uv + _GrabTexture_TexelSize * float2(1, -1) * offset;//bottom right
 			return o;
 		}
 		
 		half4 Frag_DownSample(v2f_DownSample i): SV_Target
 		{
-			half4 sum = tex2D(_GrabTexture, i.uv) * 4;
+			half4 sum = tex2D(_GrabTexture, i.uv);
 			sum += tex2D(_GrabTexture, i.uv01.xy);
 			sum += tex2D(_GrabTexture, i.uv01.zw);
 			sum += tex2D(_GrabTexture, i.uv23.xy);
 			sum += tex2D(_GrabTexture, i.uv23.zw);
 			
-			return sum * 0.125;
+			return sum * 0.2;
 		}
 		
 		v2f_UpSample Vert_UpSample(AttributesDefault v)
@@ -85,15 +84,15 @@ Shader "Demo/FrostedGlassGrabPassDualKawase"
 			float2 uv = ComputeGrabScreenPos(o.vertex);
 			_GrabTexture_TexelSize *= 0.5;
 			float offset = 1 + _Offset;
-			o.uv01.xy = uv + float2(-_GrabTexture_TexelSize.x * 2, 0) * offset;
-			o.uv01.zw = uv + float2(-_GrabTexture_TexelSize.x, _GrabTexture_TexelSize.y) * offset;
-			o.uv23.xy = uv + float2(0, _GrabTexture_TexelSize.y * 2) * offset;
-			o.uv23.zw = uv + _GrabTexture_TexelSize * offset;
-			o.uv45.xy = uv + float2(_GrabTexture_TexelSize.x * 2, 0) * offset;
-			o.uv45.zw = uv + float2(_GrabTexture_TexelSize.x, -_GrabTexture_TexelSize.y) * offset;
-			o.uv67.xy = uv + float2(0, -_GrabTexture_TexelSize.y * 2) * offset;
-			o.uv67.zw = uv - _GrabTexture_TexelSize * offset;
-			
+			o.uv01.xy = uv + _GrabTexture_TexelSize * float2(-3, -3) * offset;
+			o.uv01.zw = uv + _GrabTexture_TexelSize * float2(-3, 3) * offset;
+			o.uv23.xy = uv + _GrabTexture_TexelSize * float2(-1, 3) * offset;
+			o.uv23.zw = uv + _GrabTexture_TexelSize * float2(-1, 1) * offset;
+			o.uv45.xy = uv + _GrabTexture_TexelSize * float2(3, -3) * offset;
+			o.uv45.zw = uv + _GrabTexture_TexelSize * float2(3, 3) * offset;
+			o.uv67.xy = uv + _GrabTexture_TexelSize * float2(1, -3) * offset;
+			o.uv67.zw = uv - _GrabTexture_TexelSize * float2(3, -2) * offset;
+
 			return o;
 		}
 		
@@ -101,15 +100,14 @@ Shader "Demo/FrostedGlassGrabPassDualKawase"
 		{
 			half4 sum = 0;
 			sum += tex2D(_GrabTexture, i.uv01.xy);
-			sum += tex2D(_GrabTexture, i.uv01.zw) * 2;
+			sum += tex2D(_GrabTexture, i.uv01.zw);
 			sum += tex2D(_GrabTexture, i.uv23.xy);
-			sum += tex2D(_GrabTexture, i.uv23.zw) * 2;
+			sum += tex2D(_GrabTexture, i.uv23.zw);
 			sum += tex2D(_GrabTexture, i.uv45.xy);
-			sum += tex2D(_GrabTexture, i.uv45.zw) * 2;
+			sum += tex2D(_GrabTexture, i.uv45.zw);
 			sum += tex2D(_GrabTexture, i.uv67.xy);
-			sum += tex2D(_GrabTexture, i.uv67.zw) * 2;
-			
-			return sum * 0.0833;
+			sum += tex2D(_GrabTexture, i.uv67.zw);
+			return sum * 0.125;
 		}
 
 		ENDCG
@@ -132,8 +130,8 @@ Shader "Demo/FrostedGlassGrabPassDualKawase"
 		{
 			CGPROGRAM
 			
-			#pragma vertex Vert_UpSample
-			#pragma fragment Frag_UpSample
+			#pragma vertex Vert_DownSample
+			#pragma fragment Frag_DownSample
 			
 			ENDCG
 		}
@@ -143,8 +141,8 @@ Shader "Demo/FrostedGlassGrabPassDualKawase"
 		{
 			CGPROGRAM
 			
-			#pragma vertex Vert_UpSample
-			#pragma fragment Frag_UpSample
+			#pragma vertex Vert_DownSample
+			#pragma fragment Frag_DownSample
 			
 			ENDCG
 		}

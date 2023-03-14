@@ -211,7 +211,7 @@ GameObject:
   - component: {fileID: 847706560}
   - component: {fileID: 847706561}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Glass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -276,7 +276,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _iterations: 3
-  _downSample: 2
+  _downSample: 6
 --- !u!1 &1384012091
 GameObject:
   m_ObjectHideFlags: 0

@@ -54,15 +54,15 @@ Shader "Demo/FrostedGlassGrabPassDualKawase"
 		v2f_DownSample Vert_DownSample(AttributesDefault v)
 		{
 			v2f_DownSample o;
-			o.vertex = float4(v.vertex.xy, 0.0, 1.0);
-			
+			o.vertex = UnityObjectToClipPos(v.vertex);
 			float2 uv = ComputeGrabScreenPos(o.vertex);
-			_GrabTexture_TexelSize *= 0.5;
+			// _GrabTexture_TexelSize *= 0.5;
+			float offset = 1 + _Offset;
 			o.uv = uv;
-			o.uv01.xy = uv - _GrabTexture_TexelSize * float2(1 + _Offset, 1 + _Offset);//top right
-			o.uv01.zw = uv + _GrabTexture_TexelSize * float2(1 + _Offset, 1 + _Offset);//bottom left
-			o.uv23.xy = uv - float2(_GrabTexture_TexelSize.x, -_GrabTexture_TexelSize.y) * float2(1 + _Offset, 1 + _Offset);//top left
-			o.uv23.zw = uv + float2(_GrabTexture_TexelSize.x, -_GrabTexture_TexelSize.y) * float2(1 + _Offset, 1 + _Offset);//bottom right
+			o.uv01.xy = uv + _GrabTexture_TexelSize * offset;//top right
+			o.uv01.zw = uv - _GrabTexture_TexelSize * offset;//bottom left
+			o.uv23.xy = uv - float2(_GrabTexture_TexelSize.x, -_GrabTexture_TexelSize.y) * offset;//top left
+			o.uv23.zw = uv + float2(_GrabTexture_TexelSize.x, -_GrabTexture_TexelSize.y) * offset;//bottom right
 			
 			return o;
 		}
@@ -81,20 +81,18 @@ Shader "Demo/FrostedGlassGrabPassDualKawase"
 		v2f_UpSample Vert_UpSample(AttributesDefault v)
 		{
 			v2f_UpSample o;
-			o.vertex = float4(v.vertex.xy, 0.0, 1.0);
+			o.vertex = UnityObjectToClipPos(v.vertex);
 			float2 uv = ComputeGrabScreenPos(o.vertex);
-			
 			_GrabTexture_TexelSize *= 0.5;
-			_Offset = float2(1 + _Offset, 1 + _Offset);
-			
-			o.uv01.xy = uv + float2(-_GrabTexture_TexelSize.x * 2, 0) * _Offset;
-			o.uv01.zw = uv + float2(-_GrabTexture_TexelSize.x, _GrabTexture_TexelSize.y) * _Offset;
-			o.uv23.xy = uv + float2(0, _GrabTexture_TexelSize.y * 2) * _Offset;
-			o.uv23.zw = uv + _GrabTexture_TexelSize * _Offset;
-			o.uv45.xy = uv + float2(_GrabTexture_TexelSize.x * 2, 0) * _Offset;
-			o.uv45.zw = uv + float2(_GrabTexture_TexelSize.x, -_GrabTexture_TexelSize.y) * _Offset;
-			o.uv67.xy = uv + float2(0, -_GrabTexture_TexelSize.y * 2) * _Offset;
-			o.uv67.zw = uv - _GrabTexture_TexelSize * _Offset;
+			float offset = 1 + _Offset;
+			o.uv01.xy = uv + float2(-_GrabTexture_TexelSize.x * 2, 0) * offset;
+			o.uv01.zw = uv + float2(-_GrabTexture_TexelSize.x, _GrabTexture_TexelSize.y) * offset;
+			o.uv23.xy = uv + float2(0, _GrabTexture_TexelSize.y * 2) * offset;
+			o.uv23.zw = uv + _GrabTexture_TexelSize * offset;
+			o.uv45.xy = uv + float2(_GrabTexture_TexelSize.x * 2, 0) * offset;
+			o.uv45.zw = uv + float2(_GrabTexture_TexelSize.x, -_GrabTexture_TexelSize.y) * offset;
+			o.uv67.xy = uv + float2(0, -_GrabTexture_TexelSize.y * 2) * offset;
+			o.uv67.zw = uv - _GrabTexture_TexelSize * offset;
 			
 			return o;
 		}

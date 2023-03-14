@@ -14,6 +14,8 @@ public class FrostedGlassImage : Image
         get => _downSample;
         set
         {
+            if (_downSample.Equals(value)) return;
+
             _downSample = value;
             GaussianBlur();
         }
@@ -24,6 +26,8 @@ public class FrostedGlassImage : Image
         get => _iterations;
         set
         {
+            if (_iterations.Equals(value)) return;
+
             _iterations = value;
             GaussianBlur();
         }
@@ -73,5 +77,22 @@ public class FrostedGlassImage : Image
 
         material.SetTexture(BlurTex, buffer0);
         SetMaterialDirty();
+    }
+
+#if UNITY_EDITOR
+    private int _previousDownSample;
+    private int _previousIterations;
+#endif
+
+    private void Update()
+    {
+#if UNITY_EDITOR
+        if (!_previousDownSample.Equals(downSample) || !_previousIterations.Equals(_iterations))
+        {
+            _previousDownSample = _downSample;
+            _previousIterations = _iterations;
+            GaussianBlur();
+        }
+#endif
     }
 }

@@ -1,23 +1,27 @@
 Shader "Demo/FrostedGlass"
 {
-    Properties
-    {
-        [HideInInspector]_MainTex ("Texture", 2D) = "white" {}
+    Properties{
+        [HideInInspector] _MainTex ("Texture", 2D) = "white" {}
     }
+    
     SubShader
     {
         Tags
         {
             "Queue"="Transparent"
-            "IgnoreProjector"="True"
+            "IgnoreProjection"="True"
             "RenderType"="Transparent"
         }
         
-        Cull Off ZWrite Off ZTest Always
-
+        Cull Off
+        ZWrite Off
+        ZTest [unity_GUIZTestMode]
+        
         Pass
         {
             CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
 
             struct appdata
             {
@@ -33,9 +37,6 @@ Shader "Demo/FrostedGlass"
 
             sampler2D _BlurTex;
             
-            #pragma vertex vert
-            #pragma fragment frag
-
             v2f vert (appdata v)
             {
                 v2f o;

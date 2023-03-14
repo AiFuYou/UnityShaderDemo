@@ -276,7 +276,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   _iterations: 3
-  _downSample: 6
+  _downSample: 8
 --- !u!1 &1384012091
 GameObject:
   m_ObjectHideFlags: 0

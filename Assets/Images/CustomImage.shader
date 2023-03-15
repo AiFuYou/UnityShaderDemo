@@ -1,4 +1,4 @@
-Shader "Demo/FrostedGlass"
+Shader "Demo/CustomImage"
 {
     Properties{
         [HideInInspector] _MainTex ("Texture", 2D) = "white" {}

@@ -58,25 +58,21 @@ Shader "Demo/ImageEdgeDetection"
 
             half Sobel(v2f i)
             {
-                const half WeightX[9] = {-1, 0, 1,
-                                        -2, 0, 2,
-                                        -1, 0, 1};
-                const half WeightY[9] = {-1, -2, -1,
-                                        0, 0, 0,
-                                        1, 2, 1};
-                half Gx = 0;
-                half Gy = 0;
-                half count = 0;
-                for (int x = -1; x <= 1; ++x)
-                {
-                    for (int y = -1; y <= 1; ++y)
-                    {
-                        fixed4 gray = Luminance(tex2D(_MainTex, i.uv + _MainTex_TexelSize * half2(x, y)));
-                        Gx += gray * WeightX[count];
-                        Gy += gray * WeightY[count];
-                        ++count;
-                    }
-                }
+                // 左+左上+左下+右+右上+右下
+                half Gx = Luminance(tex2D(_MainTex, i.uv + _MainTex_TexelSize * half2(-1, 0))) * -2;
+                Gx += Luminance(tex2D(_MainTex, i.uv + _MainTex_TexelSize * half2(-1, 1))) * -1;
+                Gx += Luminance(tex2D(_MainTex, i.uv + _MainTex_TexelSize * half2(-1, -1))) * -1;
+                Gx += Luminance(tex2D(_MainTex, i.uv + _MainTex_TexelSize * half2(1, 0))) * 2;
+                Gx += Luminance(tex2D(_MainTex, i.uv + _MainTex_TexelSize * half2(1, 1))) * 1;
+                Gx += Luminance(tex2D(_MainTex, i.uv + _MainTex_TexelSize * half2(1, -1))) * 1;
+
+                // 上+左上+右上+下+左下+右下
+                half Gy = Luminance(tex2D(_MainTex, i.uv + _MainTex_TexelSize * half2(0, 1))) * -2;
+                Gy += Luminance(tex2D(_MainTex, i.uv + _MainTex_TexelSize * half2(-1, -1))) * -1;
+                Gy += Luminance(tex2D(_MainTex, i.uv + _MainTex_TexelSize * half2(1, 1))) * -1;
+                Gy += Luminance(tex2D(_MainTex, i.uv + _MainTex_TexelSize * half2(0, -1))) * 2;
+                Gy += Luminance(tex2D(_MainTex, i.uv + _MainTex_TexelSize * half2(-1, -1))) * 1;
+                Gy += Luminance(tex2D(_MainTex, i.uv + _MainTex_TexelSize * half2(1, -1))) * 1;
                 
                 return abs(Gx) + abs(Gy);
             }
@@ -86,7 +82,7 @@ Shader "Demo/ImageEdgeDetection"
                 fixed4 colOri = tex2D(_MainTex, i.uv);
                 clip(colOri.a - 0.0001);
 
-                // edge越大，越有可能是边缘
+                // edge越大，越有可能是边缘，将edge的值当成边缘的权重
                 half edge = Sobel(i);
 
                 // 边缘的权重越大，则边缘颜色所占比例越大

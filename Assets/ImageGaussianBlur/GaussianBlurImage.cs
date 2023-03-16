@@ -47,7 +47,7 @@ public class GaussianBlurImage : Image
 
     protected override void OnDisable()
     {
-        if (_buffer0.IsCreated())
+        if (_buffer0 != null && _buffer0.IsCreated())
         {
             RenderTexture.ReleaseTemporary(_buffer0);    
         }
@@ -90,19 +90,10 @@ public class GaussianBlurImage : Image
     }
 
 #if UNITY_EDITOR
-    private int _previousDownSample;
-    private int _previousIterations;
-#endif
-
-    private void Update()
+    protected override void OnValidate()
     {
-#if UNITY_EDITOR
-        if (!_previousDownSample.Equals(downSample) || !_previousIterations.Equals(_iterations))
-        {
-            _previousDownSample = _downSample;
-            _previousIterations = _iterations;
-            GaussianBlur();
-        }
-#endif
+        base.OnValidate();
+        GaussianBlur();
     }
+#endif
 }

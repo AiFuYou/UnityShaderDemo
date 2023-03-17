@@ -44,15 +44,15 @@ Shader "Demo/SpotlightWithCtrl"
         sampler2D _MainTex;
         float _BlurIntensity;
         fixed2 _Pos;
+        float2 _MainTex_TexelSize;
 
         fixed4 grag(v2f i) : SV_Target
         {
             half2 dir = _Pos - i.uv;
-            dir *= float2(_ScreenParams.x / _ScreenParams.y, 1);
+            dir *= float2(_MainTex_TexelSize.y / _MainTex_TexelSize.x, 1);
             fixed dist = length(dir);
             // saturate函数（saturate(x)的作用是如果x取值小于0，则返回值为0。如果x取值大于1，则返回值为1。若x在0到1之间，则直接返回x的值.）
             fixed4 col = lerp(tex2D(_MainTex, i.uv), fixed4(0, 0, 0, 1), saturate(_BlurIntensity * dist));
-            
             return col;
         }
 

@@ -16,6 +16,8 @@ Shader "Demo/Spotlight"
         
         // No culling or depth
         Cull Off ZWrite Off ZTest Always
+
+        Blend SrcAlpha OneMinusSrcAlpha
         
         CGINCLUDE
 
@@ -43,14 +45,19 @@ Shader "Demo/Spotlight"
 
         sampler2D _MainTex;
         float _BlurIntensity;
+        float2 _MainTex_TexelSize;
 
         fixed4 grag(v2f i) : SV_Target
         {
             half2 dir = 0.5 - i.uv;
-            dir *= float2(_ScreenParams.x / _ScreenParams.y, 1);
+            dir *= float2(_MainTex_TexelSize.y / _MainTex_TexelSize.x, 1);
             fixed dist = length(dir);
+
+            fixed4 col = tex2D(_MainTex, i.uv);
+            clip(col.a - 0.0001);
+            
             // saturate函数（saturate(x)的作用是如果x取值小于0，则返回值为0。如果x取值大于1，则返回值为1。若x在0到1之间，则直接返回x的值.）
-            return lerp(tex2D(_MainTex, i.uv), fixed4(0, 0, 0, 1), saturate(_BlurIntensity * dist));
+            return lerp(col, fixed4(0, 0, 0, 1), saturate(_BlurIntensity * dist));
         }
 
         ENDCG

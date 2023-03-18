@@ -89,7 +89,7 @@ Shader "Demo/ImageEdgeDetection"
                 fixed4 withEdgeColor = lerp(colOri, _EdgeColor, edge);
                 fixed4 onlyEdgeColor = lerp(_BackgroundColor, _EdgeColor, edge);
 
-                // EdgeOnly越大，则只显示边缘，剩下的为backgroundColor
+                // EdgeOnly越大，则显示边缘比重越大，剩下的为backgroundColor
                 return lerp(withEdgeColor, onlyEdgeColor, _EdgeOnly) * colOri.a;
             }
             ENDCG

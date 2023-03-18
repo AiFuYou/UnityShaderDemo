@@ -44,6 +44,8 @@ Shader "Demo/ImagePixel"
 
             fixed4 frag (v2f i) : SV_Target
             {
+                // 对图像进行分块，每块的颜色使用当前块的中心点像素颜色填充
+                // 也可以使用当前块的所有像素计算出一个值来填充，但这样会增加计算量，以上的算法已经可以得到比较好的效果
                 float2 newUV = floor(i.uv * _MainTex_TexelSize.zw / _PixelSize + 0.5) * _PixelSize;
                 return tex2D(_MainTex, newUV / _MainTex_TexelSize.zw);
             }

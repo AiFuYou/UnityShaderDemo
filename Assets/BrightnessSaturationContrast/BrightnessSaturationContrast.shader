@@ -54,8 +54,8 @@ Shader "Hidden/BrightnessSaturationContrast"
                 col.rgb = lerp(fixed3(gray, gray, gray), col.rgb, _Saturation);
 
                 // 对比度
-                fixed3 sat = fixed3(0.5, 0.5, 0.5);
-                col.rgb = lerp(sat, col.rgb, _Contrast);
+                fixed3 cont = fixed3(0.5, 0.5, 0.5);
+                col.rgb = lerp(cont, col.rgb, _Contrast);
 
                 return col;
             }

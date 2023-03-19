@@ -4,7 +4,7 @@ public class RadialBlur : MonoBehaviour
 {
     [Range(0, 1)] public float degree = 0.2f;
     [Range(0, 10)] public float intensity = 2;
-    [Range(1, 8)] public int downSample = 1;
+    [Range(1, 8)] public float downSample = 1;
     [Range(1, 4)] public int iterations = 1;
 
     private Material _mat;
@@ -21,8 +21,8 @@ public class RadialBlur : MonoBehaviour
             _mat.SetFloat(Degree, degree);
             _mat.SetFloat(BlurIntensity, intensity);
 
-            var w = src.width / downSample;
-            var h = src.height / downSample;
+            var w = (int)(src.width / downSample);
+            var h = (int)(src.height / downSample);
 
             var buffer0 = RenderTexture.GetTemporary(w, h);
             Graphics.Blit(src, buffer0, _mat, 0);

@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class SpotlightWithCtrl : MonoBehaviour
+public class ImagePartWithCtrl : MonoBehaviour
 {
     [Range(0, 10)]public float blurIntensity = 3f;
     
@@ -14,7 +12,7 @@ public class SpotlightWithCtrl : MonoBehaviour
     // Start is called before the first frame update
     private void OnRenderImage(RenderTexture src, RenderTexture dest)
     {
-        if (!_mat) _mat = new Material(Shader.Find("Demo/SpotlightWithCtrl"));
+        if (!_mat) _mat = new Material(Shader.Find("Demo/ImagePartWithCtrl"));
 
         if (_mat != null && _mat.shader.isSupported)
         {

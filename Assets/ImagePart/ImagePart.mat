@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Spotlight
+  m_Name: ImagePart
   m_Shader: {fileID: 4800000, guid: 8cf65b7e472c542129ee0f9cf58c67f8, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []

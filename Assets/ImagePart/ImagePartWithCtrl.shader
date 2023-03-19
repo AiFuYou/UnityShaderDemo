@@ -1,4 +1,4 @@
-Shader "Demo/SpotlightWithCtrl"
+Shader "Demo/ImagePartWithCtrl"
 {
     Properties
     {

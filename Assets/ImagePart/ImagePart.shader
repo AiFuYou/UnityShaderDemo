@@ -1,4 +1,4 @@
-Shader "Demo/Spotlight"
+Shader "Demo/ImagePart"
 {
     Properties
     {

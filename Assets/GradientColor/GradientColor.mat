@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GradientText
+  m_Name: GradientColor
   m_Shader: {fileID: 4800000, guid: d7b20f150ccee40ddb448a42cec2bc8a, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -76,7 +76,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _ColorLeft: {r: 0, g: 0, b: 0, a: 1}
-    - _ColorRight: {r: 1, g: 1, b: 1, a: 1}
+    - _ColorLeft: {r: 1, g: 0, b: 0, a: 1}
+    - _ColorRight: {r: 0.07006645, g: 1, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

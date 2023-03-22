@@ -52,16 +52,11 @@ Shader "Hidden/DepthOfFieldShader"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                // fixed4 col = tex2D(_MainTex, i.uv);
-                // return col;
-
                 //直接根据UV坐标取该点的深度值  
-                // float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv);  
+                float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv);  
                 //将深度值变为线性01空间  
-                // depth = Linear01Depth(depth);  
-                // return float4(depth, depth, depth, 1);
-
-                return lerp(fixed4(1, 1, 1, 1), fixed4(0, 0, 0, 1), Linear01Depth(i.vertex.z));
+                depth = Linear01Depth(depth);  
+                return float4(depth, depth, depth, 1);
             }
             ENDCG
         }

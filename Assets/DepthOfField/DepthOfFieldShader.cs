@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class DepthOfFieldShader : MonoBehaviour
 {
@@ -39,6 +38,7 @@ public class DepthOfFieldShader : MonoBehaviour
     {
         if (!_mat)
         {
+            Application.targetFrameRate = 30;
             _mat = new Material(Shader.Find("Hidden/DepthOfFieldShader"));
             CurCamera.depthTextureMode = DepthTextureMode.Depth;
         }
@@ -96,5 +96,14 @@ public class DepthOfFieldShader : MonoBehaviour
     {
         return (distance - CurCamera.nearClipPlane) / (CurCamera.farClipPlane - CurCamera.nearClipPlane);
         // return CurCamera.WorldToViewportPoint((distance - CurCamera.nearClipPlane) * CurCamera.transform.forward + CurCamera.transform.position).z / (CurCamera.farClipPlane - CurCamera.nearClipPlane);  
+    }
+
+    private void Update()
+    {
+        if (CurCamera.transform.position.z >= 30)
+        {
+            CurCamera.transform.position = new Vector3(0, 0, -10);
+        }
+        CurCamera.transform.position += new Vector3(0, 0, Time.deltaTime * 5f);
     }
 }

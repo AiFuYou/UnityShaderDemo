@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class DepthOfFieldShader : MonoBehaviour
 {
@@ -10,8 +11,12 @@ public class DepthOfFieldShader : MonoBehaviour
     [Range(0f, 10)] public float nearBlurScale = 5f;
     [Range(0f, 10)] public float farBlurScale = 5f;
 
-    private Material _mat;
+    public bool useNearBlur = true;
+    public bool useFarBlur = true;
+    private string _keyWordUseNearBlur = "USE_NEAR_BLUR";
+    private string _keyWordUseFarBlur = "USE_FAR_BLUR";
 
+    private Material _mat;
     private Camera _curCamera;
 
     private Camera CurCamera
@@ -69,8 +74,16 @@ public class DepthOfFieldShader : MonoBehaviour
             _mat.SetFloat(FocalDistance, fd);
             _mat.SetFloat(NearBlurScale, nearBlurScale);
             _mat.SetFloat(FarBlurScale, farBlurScale);
-            Graphics.Blit(src, dest, _mat, 2);
+            if (useNearBlur)
+                _mat.EnableKeyword(_keyWordUseNearBlur);
+            else
+                _mat.DisableKeyword(_keyWordUseNearBlur);
+            if (useFarBlur)
+                _mat.EnableKeyword(_keyWordUseFarBlur);
+            else
+                _mat.DisableKeyword(_keyWordUseFarBlur);
 
+            Graphics.Blit(src, dest, _mat, 2);
             RenderTexture.ReleaseTemporary(buffer0);
         }
         else
@@ -82,5 +95,6 @@ public class DepthOfFieldShader : MonoBehaviour
     private float FocalDistance01(float distance)
     {
         return (distance - CurCamera.nearClipPlane) / (CurCamera.farClipPlane - CurCamera.nearClipPlane);
+        // return CurCamera.WorldToViewportPoint((distance - CurCamera.nearClipPlane) * CurCamera.transform.forward + CurCamera.transform.position).z / (CurCamera.farClipPlane - CurCamera.nearClipPlane);  
     }
 }

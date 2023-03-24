@@ -104,12 +104,20 @@ Shader "Hidden/DepthOfFieldShader"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile_local _ USE_NEAR_BLUR
+            #pragma multi_compile_local _ USE_FAR_BLUR
 
             #include "UnityCG.cginc"
 
-            v2f vert (appdata v)
+            struct v2fTemp
             {
-                v2f o;
+                float2 uv : TEXCOORD0;
+                float4 vertex : SV_POSITION;
+            };
+            
+            v2fTemp vert (appdata v)
+            {
+                v2fTemp o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
                 return o;
@@ -120,26 +128,37 @@ Shader "Hidden/DepthOfFieldShader"
             float _NearBlurScale;
             float _FarBlurScale;
             
-            fixed4 frag (v2f i) : SV_Target
+            fixed4 frag (v2fTemp i) : SV_Target
             {
                 fixed4 colOri = tex2D(_MainTex, i.uv);
-                fixed4 colBlur = tex2D(_BlurTex, i.uv);
 
                 //直接根据UV坐标取该点的深度值  
                 float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv);  
                 // 将深度值变为线性01空间  
                 depth = Linear01Depth(depth);  
+                // return fixed4(depth, depth, depth, 1);
+                fixed4 colBlur = tex2D(_BlurTex, i.uv);
+                float focalTest = clamp(sign(depth - _FocalDistance), 0, 1);
 
+                // 效果一
                 // fixed4 colFinal = depth <= _FocalDistance ? colOri : lerp(colOri, colBlur, clamp((depth - _FocalDistance) * _FarBlurScale, 0, 1));
                 // colFinal = depth > _FocalDistance ? colFinal : lerp(colOri, colBlur, clamp((_FocalDistance - depth) * _NearBlurScale, 0, 1));
 
                 // 过度效果更好
                 // 深度与焦距比较，为负值，则为0，为正值，则为本身
-                float focalTest = clamp(sign(depth - _FocalDistance), 0, 1);
-                // 深度大于焦距的颜色
-                fixed4 colFinal = lerp(colOri, lerp(colOri, colBlur, clamp((depth - _FocalDistance) * _FarBlurScale, 0, 1)), focalTest);
-                // 深度小于焦距的颜色
+                
+                fixed4 colFinal = colOri;
+
+                // 深度大于焦距的颜色，远景模糊
+                #ifdef USE_FAR_BLUR
+                colFinal = lerp(colOri, lerp(colOri, colBlur, clamp((depth - _FocalDistance) * _FarBlurScale, 0, 1)), focalTest);
+                #endif
+
+                // 深度小于焦距的颜色，近景模糊
+                #ifdef USE_NEAR_BLUR
                 colFinal = lerp(lerp(colOri, colBlur, clamp((_FocalDistance - depth) * _NearBlurScale, 0, 1)), colFinal, focalTest);
+                #endif
+
                 return colFinal;
             }
             ENDCG

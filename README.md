@@ -61,3 +61,10 @@
 * 模糊程度同样取决与迭代次数和采样值，downSample值越大，像素计算次数越少，模糊效果越好
 * degree控制偏移程度，blurIntensity控制径向模糊范围，downSample控制采样，iterations控制迭代次数
 
+## DepthOfField 景深效果
+相机渲染出的深度纹理和相机后处理出的高斯模糊图像进行插值，得到景深效果
+* 打开相机的深度图输出设置
+* 在OnRenderImage里对图像进行高斯模糊
+* 将模糊后的图与原图根据深度值和焦距进行插值
+* 2D元素同样也实现景深效果，由于渲染深度纹理需要在不透明渲染队列且有投影Pass，故对原`Sprites-Default.shader`进行了一部份修改，想要实现景深效果的2DSprite图像需要使用此Shader
+
